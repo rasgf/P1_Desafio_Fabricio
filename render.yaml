@@ -6,6 +6,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn sensor_api.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
       - key: DATABASE_URL
         fromDatabase:
           name: iot-db
@@ -18,6 +20,8 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python alert_worker/main.py
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
       - key: API_URL
         value: https://sensor-api-iot.onrender.com/leituras
 
