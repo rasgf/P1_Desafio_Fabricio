@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: iotdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d iotdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sensor_api:
+    build: 
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/iotdb
+    depends_on:
+      db:
+        condition: service_healthy
+
+  alert_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - API_URL=http://sensor_api:8000/leituras
+    depends_on:
+      - sensor_api

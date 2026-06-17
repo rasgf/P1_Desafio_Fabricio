@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: sensor-api-iot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn sensor_api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: iot-db
+          property: connectionString
+
+  - type: worker
+    name: alert-worker-iot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python alert_worker/main.py
+    envVars:
+      - key: API_URL
+        value: https://sensor-api-iot.onrender.com/leituras
+
+databases:
+  - name: iot-db
+    databaseName: iotdb
+    user: admin
+    plan: free
