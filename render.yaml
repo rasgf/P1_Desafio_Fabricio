@@ -2,6 +2,7 @@ services:
   - type: web
     name: sensor-api-iot
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn sensor_api.main:app --host 0.0.0.0 --port $PORT
     envVars:
@@ -10,9 +11,10 @@ services:
           name: iot-db
           property: connectionString
 
-  - type: worker
+  - type: web
     name: alert-worker-iot
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python alert_worker/main.py
     envVars:
